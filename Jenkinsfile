@@ -90,7 +90,31 @@ pipeline {
                 '''
             }
         }
-        
+        stage('Test env E2E') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true
+                }
+            }
+
+            environment {
+                CI_ENVIRONMENT_URL = 'https://68149c754fd3aec7ce9e119a--remarkable-cranachan-93dc79.netlify.app'
+            }
+
+            steps {
+                sh '''
+                    npx playwright test --reporter=html
+                '''
+            }
+
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E Test env', reportTitles: '', useWrapperFileDirectly: true])
+                }
+            }
+        }
+    
         stage('Deploy to Prod') {
             agent {
                 docker {
@@ -109,29 +133,6 @@ pipeline {
             }
         }
 
-        stage('Prod E2E') {
-            agent {
-                docker {
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-                    reuseNode true
-                }
-            }
 
-            environment {
-                CI_ENVIRONMENT_URL = 'https://remarkable-cranachan-93dc79.netlify.app/'
-            }
-
-            steps {
-                sh '''
-                    npx playwright test --reporter=html
-                '''
-            }
-
-            post {
-                always {
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E Prod', reportTitles: '', useWrapperFileDirectly: true])
-                }
-            }
-        }
     }
 }
