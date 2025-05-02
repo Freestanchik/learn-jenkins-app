@@ -82,12 +82,16 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm install netlify-cli
+                    npm install netlify-cli node-jq
                     node_modules/.bin/netlify --version
                     echo "Deploying to prod. Site ID: $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build
+                    node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json 
+                    node_modules/.bin/node.jq -r '.deploy_url' deploy-output.json
                 '''
+            }
+            script {
+                env.STAGING_URL = sh(script: "node_modules/.bin/node.jq -r '.deploy_url' deploy-output.json", returnStdout: true)
             }
         }
         stage('Test env E2E') {
@@ -99,7 +103,7 @@ pipeline {
             }
 
             environment {
-                CI_ENVIRONMENT_URL = 'https://68149c754fd3aec7ce9e119a--remarkable-cranachan-93dc79.netlify.app'
+                CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
             }
 
             steps {
