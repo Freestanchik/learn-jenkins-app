@@ -114,6 +114,14 @@ pipeline {
                 }
             }
         }
+
+        stage('Approval') {
+            steps {
+                timeout(1) {
+                    input message: 'Ready to deploy?', ok: 'Yes, I am sure'
+                }
+            }
+        }
     
         stage('Deploy to Prod') {
             agent {
