@@ -121,7 +121,7 @@ pipeline {
             }
 
             environment {
-                CI_ENVIRONMENT_URL = 'Some URL'
+                CI_ENVIRONMENT_URL = 'https://remarkable-cranachan-93dc79.netlify.app'
             }
 
             steps {
