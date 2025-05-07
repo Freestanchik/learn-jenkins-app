@@ -1,0 +1,15 @@
+FROM jenkins/inbound-agent
+
+USER root
+
+# Install Docker
+RUN apt-get update && apt-get install -y \
+    docker.io
+
+# Enable Docker service
+RUN service docker start
+
+# Ensure Jenkins user can access Docker
+RUN groupadd docker && usermod -aG docker jenkins
+
+USER jenkins
