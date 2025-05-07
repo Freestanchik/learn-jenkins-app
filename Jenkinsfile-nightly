@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'custom-jenkins-agent-with-docker'
-            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket
-        }
-    }
+    agent any
 
     environment {
         NETLIFY_SITE_ID = '3d5a3f26-0e92-445e-b3a1-1272d3323c57'
@@ -16,7 +11,7 @@ pipeline {
 
         stage('Build Docker') {
             steps {
-                sh 'docker build -f Dockerfile2 -t custom-jenkins-dind-agent .'
+                sh 'docker build -t my-playwright .'
             }
         }
     }
